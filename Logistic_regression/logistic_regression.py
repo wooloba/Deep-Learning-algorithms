@@ -133,27 +133,30 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
         x_train = x_train.reshape(40000,one_image_shape)
         x_test = x_test.reshape(10000,one_image_shape)
         print(x_train.shape)
-        #return 0
+        return 0
 
     elif dataset_name == "MNIST":
-        #lamda = 0.087
-        lamda = 0.0000000001
+        lamda = 0.087
+        #lamda = 0.00001
         one_image_shape = 28 * 28
+        # return 0
 
     Xmean = np.mean(x_train,axis=0) #
     Ymean = np.mean(y_train,axis=0) #mean of training labels
 
-    X = tf.placeholder(dtype=tf.float32, shape=[None, one_image_shape])  # a single image 1 X 784(28*28) or 1 X 3072
-    y = tf.placeholder(dtype=tf.float32, shape=[None, 10])
+    X = tf.placeholder(dtype=tf.float64, shape=[None, one_image_shape])  # a single image 1 X 784(28*28) or 1 X 3072
+    y = tf.placeholder(dtype=tf.float64, shape=[None, 10])
 
-    W = tf.Variable(tf.zeros([one_image_shape,10])) #Parameters
+    W = tf.Variable(tf.zeros([one_image_shape,10],dtype=tf.float64)) #Parameters
 
     #Si = (xi - X(mean))' * W + Y(mean)
+
+    #   add stuff
     score = tf.matmul((X - Xmean), W) + Ymean
     Yp = tf.nn.softmax(score)
 
     #loss function + L2 regularization
-    loss_function = -tf.reduce_mean(y * tf.log(Yp)) + lamda * tf.reduce_mean(tf.square(W))
+    loss_function = -tf.reduce_mean(y * tf.log(Yp + 0.001)) + lamda * tf.reduce_mean(tf.square(W))
     # add L1 regularization
     #loss_function += lamda* tf.reduce_mean(tf.abs(W))
 
@@ -170,7 +173,7 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
         # If dump all data into memory, it will cause the system crashed unless you have lots of ram installed. To avoid this, the best way is to split the input into different batches, then read in and train each batch.
         dataset = DatasetIterator(x_train,y_train,batchsize)
 
-        for i in range((len(x_train)/batchsize) * 1000):
+        for i in range((len(x_train)/batchsize) * 300):
             [batch_x, batch_y] =  dataset.next_batch()
             sess.run(training_op,feed_dict={X:batch_x.reshape(batchsize,one_image_shape) ,y:batch_y})
 
@@ -190,6 +193,9 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
             #     print(regerr_train, regerr_validation, acc_train, acc_validation)
 
                 #c = sess.run(loss_function,feed_dict = {X:batch_x,y:batch_y})
+            # score_t = score.eval(feed_dict={X:batch_x.reshape(batchsize,one_image_shape) ,y:batch_y})
+            # print(score_t)
+
 
         trained_W = W.eval()
         yp_test = tf.argmax(Yp.eval(feed_dict= {X:x_test.reshape(len(x_test),one_image_shape),W: trained_W}),1).eval()
