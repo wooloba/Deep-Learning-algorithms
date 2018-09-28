@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
+#Yaozhi Lu
 
 class DatasetIterator:
     def __init__(self, x, y, batch_size):
@@ -134,9 +135,6 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
         # return 0
 
     Xmean = np.mean(x_train,axis=0) #
-    Ymean = np.mean(y_train,axis=0) #mean of training labels
-
-    #Ymean = tf.Variable(tf.zeros([10]))
 
     X = tf.placeholder(dtype=tf.float64, shape=[None, one_image_shape])  # a single image 1 X 784(28*28) or 1 X 3072
     y = tf.placeholder(dtype=tf.float64, shape=[None, 10])
@@ -152,15 +150,11 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
     # add L1 regularization
     #loss_function += lamda* tf.reduce_mean(tf.abs(W))
     if dataset_name == "MNIST":
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
     else:
         optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
 
     training_op = optimizer.minimize(loss_function)
-    #validation
-    # y1 = tf.placeholder(tf.float32, [None, 10])
-    # y2 = tf.placeholder(tf.float32, [None, 10])
-    # acc = 100.0 * tf.reduce_mean(tf.cast(tf.equal(tf.argmax(y1, axis=1), tf.argmax(y2, axis=1)), tf.float32))
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -177,5 +171,7 @@ def logistic_regression(dataset_name, x_train, y_train, x_valid, y_valid, x_test
         return  yp_test
 
 
-#('\nResult:\n', "OrderedDict([('MNIST', OrderedDict([('run_time', 440.7639298439026), ('correct_predict', 9158), ('score', 95.79999999999991), ('accuracy', 0.9158)])),
-## ('CIFAR10', OrderedDict([('run_time', 1028.996630191803), ('correct_predict', 4069), ('score', 100.0), ('accuracy', 0.4069)])), ('total_score', 97.89999999999995)])")
+#('\nResult:\n', "OrderedDict ([
+# ('MNIST', OrderedDict([('run_time', 163.0433759689331), ('correct_predict', 9222), ('score', 100.0), ('accuracy', 0.9222)])),
+#('CIFAR10', OrderedDict([('run_time', 480.2080068588257), ('correct_predict', 4048), ('score', 100.0), ('accuracy', 0.4048)])),
+# ('total_score', 100.0)])")
