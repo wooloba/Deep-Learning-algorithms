@@ -111,6 +111,11 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
     # Add all tensorflow ops to update betas, m,v to updates_ops
     # Add all ops to update V to training_ops
 
+    #minimize loss function
+    theta = 0
+    with tf.name_scope("adam"):
+
+
     with tf.name_scope("eval"):
         accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)),
                                                   dtype=tf.float32))
