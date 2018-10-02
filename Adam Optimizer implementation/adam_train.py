@@ -112,8 +112,22 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
     # Add all ops to update V to training_ops
 
     #minimize loss function
-    theta = 0
+    theta = 10
+    t = 0
+    mt = 0
+    vt = 0
+
     with tf.name_scope("adam"):
+        while theta > 1e-8:
+            t += 1
+            gt = tf.gradients(Vs,dVs)
+            mt = beta1 * mt + (1-beta1) * gt
+            vt = beta2 * vt + (1-beta2) * tf.square(gt)
+
+            mt_hat = mt/(1-beta1**t)
+            vt_hat = vt/(1-beta2**t)
+
+            theta = theta - learning_rate * (mt_hat/(tf.sqrt(vt_hat + eps)))
 
 
     with tf.name_scope("eval"):
