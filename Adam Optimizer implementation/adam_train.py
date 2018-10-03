@@ -121,17 +121,15 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
 
         m_array = [0] * len(Vs)
         v_array = [0] * len(dVs)
-
-        t = tf.assign(t, t + 1)
-
+        training_ops = [None] * len(Vs)
         for i in range(len(Vs)):
             m_array[i] = beta1 * m_array[i] + ((1-beta1) * dVs[i])
             v_array[i] = beta2 * v_array[i] + ((1-beta2) * tf.square(dVs[i]))
 
-            mt_hat_w = m_array[i]/(1-beta1**t)
-            vt_hat_w = v_array[i]/(1-beta2**t)
+            mt_hat = m_array[i]/(1 - beta1**t)
+            vt_hat = v_array[i]/(1 - beta2**t)
 
-            params = tf.assign(Vs[i], Vs[i] - learning_rate * (mt_hat_w/(tf.sqrt(vt_hat_w + eps))))
+            params = tf.assign(Vs[i], Vs[i] - learning_rate * (mt_hat/(tf.sqrt(vt_hat) + eps )))
             training_ops.append(params)
             #a = learning_rate * (mt_hat_w/(tf.sqrt(vt_hat_w + eps)))
 
@@ -157,13 +155,16 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
 
         for epoch in range(n_epochs):
             # compute model
-            sess.run(t)
-
+            sess.run(tf.assign(t, t + 1))
+            print("t",t.eval())
+            print("epoch",epoch)
             for iteration in range(n_batches):
                 x_batch, y_batch = dataset_iterator.next_batch()
                 sess.run(update_ops, feed_dict={X: x_batch, y: y_batch})
                 sess.run(training_ops, feed_dict={X: x_batch, y: y_batch})
-            print(loss.eval(feed_dict={X: x_batch, y: y_batch}))
+
+
+
 
             acc_train = accuracy.eval(feed_dict={X: x_batch, y: y_batch})
             acc_validation = accuracy.eval(feed_dict={X: x_valid, y: y_valid})
