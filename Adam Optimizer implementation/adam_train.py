@@ -115,26 +115,45 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
     # Add all ops to update V to training_ops
 
     #minimize loss function
+    # t = tf.Variable(0.)
+    #
+    # with tf.name_scope("adam"):
+    #
+    #     m_array = [0] * len(Vs)
+    #     v_array = [0] * len(dVs)
+    #     training_ops = [None] * len(Vs)
+    #     for i in range(len(Vs)):
+    #         m_array[i] = beta1 * m_array[i] + ((1-beta1) * dVs[i])
+    #         v_array[i] = beta2 * v_array[i] + ((1-beta2) * tf.square(dVs[i]))
+    #
+    #         mt_hat = m_array[i]/(1 - beta1**t)
+    #         vt_hat = v_array[i]/(1 - beta2**t)
+    #
+    #         params = tf.assign(Vs[i], Vs[i] - learning_rate * (mt_hat/(tf.sqrt(vt_hat) + eps )))
+    #         training_ops.append(params)
+    #         #a = learning_rate * (mt_hat_w/(tf.sqrt(vt_hat_w + eps)))
+    #
+    #     update_ops.append(m_array)
+    #     update_ops.append(v_array)
     t = tf.Variable(0.)
 
     with tf.name_scope("adam"):
-
-        m_array = [0] * len(Vs)
-        v_array = [0] * len(dVs)
-        training_ops = [None] * len(Vs)
+        m_array = []
+        v_array = []
         for i in range(len(Vs)):
-            m_array[i] = beta1 * m_array[i] + ((1-beta1) * dVs[i])
-            v_array[i] = beta2 * v_array[i] + ((1-beta2) * tf.square(dVs[i]))
+            m_array.append(tf.Variable(tf.zeros(Vs[i].shape)))
+            v_array.append(tf.Variable(tf.zeros(Vs[i].shape)))
 
-            mt_hat = m_array[i]/(1 - beta1**t)
-            vt_hat = v_array[i]/(1 - beta2**t)
+        for i in range(len(Vs)):
+            m = tf.assign(m_array[i], beta1 * m_array[i] + ((1 - beta1) * dVs[i]))
+            v = tf.assign(v_array[i], beta2 * v_array[i] + ((1 - beta2) * tf.square(dVs[i])))
 
-            params = tf.assign(Vs[i], Vs[i] - learning_rate * (mt_hat/(tf.sqrt(vt_hat) + eps )))
+            update_ops.append((m, v))
+
+            learning_rate *= tf.sqrt(1 - (beta2 ** t)) / (1 - (beta1 ** t))
+            params = tf.assign(Vs[i], Vs[i] - learning_rate * (m / (tf.sqrt(v) + eps)))
+
             training_ops.append(params)
-            #a = learning_rate * (mt_hat_w/(tf.sqrt(vt_hat_w + eps)))
-
-        update_ops.append(m_array)
-        update_ops.append(v_array)
 
 
     with tf.name_scope("eval"):
@@ -156,8 +175,6 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
         for epoch in range(n_epochs):
             # compute model
             sess.run(tf.assign(t, t + 1))
-            print("t",t.eval())
-            print("epoch",epoch)
             for iteration in range(n_batches):
                 x_batch, y_batch = dataset_iterator.next_batch()
                 sess.run(update_ops, feed_dict={X: x_batch, y: y_batch})
