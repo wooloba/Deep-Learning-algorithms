@@ -1,1 +1,1 @@
-OrderedDict([('run_time', 584.200080871582), ('correct_predict', 2566), ('score', 16.599999999999998), ('accuracy', 0.2566)])
+OrderedDict([('run_time', 1805.4098269939423), ('correct_predict', 3480), ('score', 100.0), ('accuracy', 0.348)])

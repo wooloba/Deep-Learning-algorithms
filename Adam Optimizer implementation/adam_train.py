@@ -164,13 +164,12 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
 
     n_epochs = 100
     batch_size = 200
-    n_batches = len(x_train) // batch_size
+    n_batches = len(x_train)*3 // batch_size
 
     dataset_iterator = DatasetIterator(x_train, y_train, batch_size)
 
     with tf.Session() as sess:
         sess.run(init)
-
 
         for epoch in range(n_epochs):
             # compute model
@@ -179,9 +178,6 @@ def adam_train(x_train, y_train, x_valid, y_valid, x_test):
                 x_batch, y_batch = dataset_iterator.next_batch()
                 sess.run(update_ops, feed_dict={X: x_batch, y: y_batch})
                 sess.run(training_ops, feed_dict={X: x_batch, y: y_batch})
-
-
-
 
             acc_train = accuracy.eval(feed_dict={X: x_batch, y: y_batch})
             acc_validation = accuracy.eval(feed_dict={X: x_valid, y: y_valid})
