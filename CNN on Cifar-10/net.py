@@ -128,7 +128,7 @@ def test(cifar10_test_images):
     # DO NOT RUN TRAINING HERE!
     # LOAD THE MODEL AND RUN TEST ON THE TEST SET
 
-    X = tf.placeholder(tf.float32, shape=(None, cifar10_test_images.shape), name="X")
+    X = tf.placeholder(tf.float32, shape= cifar10_test_images.shape, name="X")
     #Y = tf.placeholder(tf.float32, shape=(None, 10), name="y")
     #prediction = tf.placeholder(tf.float32, shape=(None, 10), name="y")
 
@@ -138,6 +138,6 @@ def test(cifar10_test_images):
 
     with tf.Session() as sess:
         saver.restore(sess, tf.train.latest_checkpoint('ckpt'))
-        sess.run(logits, feed_dict={X: cifar10_test_images})
+        output = sess.run(logits, feed_dict={X: cifar10_test_images})
 
-        return np.argmax(logits,1)
+        return np.argmax(output,1)

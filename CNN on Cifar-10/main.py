@@ -21,7 +21,7 @@ def compute_score(acc, min_thres, max_thres):
 
 
 if __name__ == '__main__':
-    TRAIN = True
+    TRAIN = False
     if TRAIN:
         train()
     cifar10_test = Cifar10(test=True, shuffle=False, one_hot=False)
