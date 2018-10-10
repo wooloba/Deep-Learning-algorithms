@@ -7,14 +7,12 @@ def W_generator(shape):
     sigma = 0.1
 
     W = tf.Variable(tf.truncated_normal(shape, mean= mu, stddev= sigma))
-
     return W
 
 def add_gradient_summaries(grads_and_vars):
     for grad, var in grads_and_vars:
         if grad is not None:
             tf.summary.histogram(var.op.name + "/gradient", grad)
-
 
 def net(input, is_training, dropout_kept_prob):
   # TODO: Write your network architecture here
@@ -35,7 +33,6 @@ def net(input, is_training, dropout_kept_prob):
 
         # Max Pooling
         conv1 = tf.nn.max_pool(conv1, ksize=[1,3,3,1], strides=[1,2,2,1], padding='VALID')
-
 
     with tf.name_scope("layer2"):
         conv2_W = W_generator([5, 5, 16, 32])
@@ -69,15 +66,11 @@ def net(input, is_training, dropout_kept_prob):
         fc3_b = tf.Variable(tf.zeros(10))
         logits = tf.matmul(fc2, fc3_W) + fc3_b
 
-
-
     return logits
 
 def train():
   # Always use tf.reset_default_graph() to avoid error
-
     tf.reset_default_graph()
-
     # TODO: Write your training code here
     # - Create placeholder for inputs, training boolean, dropout keep probablity
     # - Construct your model
@@ -105,12 +98,9 @@ def train():
     add_gradient_summaries(grads_and_vars)
     tf.summary.scalar('loss_operation', loss_operation)
     merged_summary_op = tf.summary.merge_all()
-    #summary_writer = tf.summary.FileWriter('logs/')
 
     saver = tf.train.Saver()
-
-    accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(Y, axis=1)),
-                                          dtype=tf.float32))
+    #accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(Y, axis=1)),dtype=tf.float32))
 
     with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
@@ -130,7 +120,6 @@ def test(cifar10_test_images):
     # Always use tf.reset_default_graph() to avoid error
     tf.reset_default_graph()
     # TODO: Write your testing code here
-
     # - Create placeholder for inputs, training boolean, dropout keep probablity
     # - Construct your model
     # (Above 2 steps should be the same as in train function)
@@ -143,7 +132,7 @@ def test(cifar10_test_images):
     #Y = tf.placeholder(tf.float32, shape=(None, 10), name="y")
     #prediction = tf.placeholder(tf.float32, shape=(None, 10), name="y")
 
-    logits = net(X,True,0.1)
+    logits = net(X,True,None)
 
     saver = tf.train.Saver()
 
@@ -152,5 +141,3 @@ def test(cifar10_test_images):
         sess.run(logits, feed_dict={X: cifar10_test_images})
 
         return np.argmax(logits,1)
-
-
