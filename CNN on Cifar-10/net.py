@@ -89,19 +89,15 @@ def train():
 
     learning_rate = 0.001
 
-
-
     X = tf.placeholder(tf.float32, shape=(None,32,32,3), name="X")
     Y = tf.placeholder(tf.float32, shape=(None, 10), name="y")
 
-
-    logits = net(X,True,0.1)
+    logits = net(X,True,None)
     cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y)
     loss_operation = tf.reduce_mean(cross_entropy)
     optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
     grads_and_vars = optimizer.compute_gradients(loss_operation, tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
     training_operation = optimizer.apply_gradients(grads_and_vars)
-
 
     for var in tf.trainable_variables():
         tf.summary.histogram(var.op.name + "/histogram", var)
@@ -111,9 +107,7 @@ def train():
     merged_summary_op = tf.summary.merge_all()
     #summary_writer = tf.summary.FileWriter('logs/')
 
-
     saver = tf.train.Saver()
-
 
     accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(Y, axis=1)),
                                           dtype=tf.float32))
@@ -123,7 +117,6 @@ def train():
             cifar10_train = Cifar10(batch_size=100, one_hot=True, test=False, shuffle=True)
 
             n_epochs = 100
-            batch_size = 200
             n_batches = 100
 
             for epoch in range(n_epochs):
@@ -132,7 +125,6 @@ def train():
                     batch_x, batch_y = cifar10_train.get_next_batch()
                     sess.run([training_operation,merged_summary_op],feed_dict={X:batch_x,Y:batch_y})
             saver.save(sess, 'ckpt/', global_step=n_epochs)
-
 
 def test(cifar10_test_images):
     # Always use tf.reset_default_graph() to avoid error
@@ -159,6 +151,6 @@ def test(cifar10_test_images):
         saver.restore(sess, tf.train.latest_checkpoint('ckpt'))
         sess.run(logits, feed_dict={X: cifar10_test_images})
 
-        return tf.argmax(logits,1)
+        return np.argmax(logits,1)
 
 
