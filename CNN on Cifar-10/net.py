@@ -15,14 +15,9 @@ def add_gradient_summaries(grads_and_vars):
             tf.summary.histogram(var.op.name + "/gradient", grad)
 
 def net(input, is_training, dropout_kept_prob):
-  # TODO: Write your network architecture here
-  # Or you can write it inside train() function
-  # Requirements:
-  # - At least 5 layers in total
-  # - At least 1 fully connected and 1 convolutional layer
-  # - At least one maxpool layers
 
-    #first layer: Convolutional layer Input :32x32x3, Output:
+
+    #first layer: Convolutional layer Input :32x32x3, Output:28*28*16
     with tf.name_scope("layer1"):
         conv1_W = W_generator([5,5,3,16])
         conv1_b = tf.Variable(tf.zeros(16))
@@ -33,7 +28,8 @@ def net(input, is_training, dropout_kept_prob):
 
         # Max Pooling
         conv1 = tf.nn.max_pool(conv1, ksize=[1,3,3,1], strides=[1,2,2,1], padding='VALID')
-
+    
+    #Second layer: Convolutional layer
     with tf.name_scope("layer2"):
         conv2_W = W_generator([5, 5, 16, 32])
         conv2_b = tf.Variable(tf.zeros(32))
@@ -45,8 +41,8 @@ def net(input, is_training, dropout_kept_prob):
         #Max Pooling
         conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-    fc0 = flatten(conv2)
-
+    #Third layer: full Convolutional layer
+    fc0 = flatten(conv2)    
     with tf.name_scope("layer3_fc"):
         fc1_W = W_generator([512,120])
         fc1_b = tf.Variable(tf.zeros(120))
@@ -54,13 +50,15 @@ def net(input, is_training, dropout_kept_prob):
 
         fc1 = tf.nn.relu(fc1)
 
+    #Forth layer: full Convolutional layer
     with tf.name_scope("layer4_fc"):
         fc2_W = W_generator([120, 84])
         fc2_b = tf.Variable(tf.zeros(84))
         fc2 = tf.matmul(fc1, fc2_W) + fc2_b
 
         fc2 = tf.nn.relu(fc2)
-
+    
+    #Fifth layer: full Convolutional layer
     with tf.name_scope("layer5_fc"):
         fc3_W = W_generator([84, 10])
         fc3_b = tf.Variable(tf.zeros(10))
@@ -69,16 +67,8 @@ def net(input, is_training, dropout_kept_prob):
     return logits
 
 def train():
-  # Always use tf.reset_default_graph() to avoid error
+ 
     tf.reset_default_graph()
-    # TODO: Write your training code here
-    # - Create placeholder for inputs, training boolean, dropout keep probablity
-    # - Construct your model
-    # - Create loss and training op
-    # - Run training
-    # AS IT WILL TAKE VERY LONG ON CIFAR10 DATASET TO TRAIN
-    # YOU SHOULD USE tf.train.Saver() TO SAVE YOUR MODEL AFTER TRAINING
-    # AT TEST TIME, LOAD THE MODEL AND RUN TEST ON THE TEST SET
 
     learning_rate = 0.001
 
@@ -117,20 +107,10 @@ def train():
             saver.save(sess, 'ckpt/', global_step=n_epochs)
 
 def test(cifar10_test_images):
-    # Always use tf.reset_default_graph() to avoid error
+   
     tf.reset_default_graph()
-    # TODO: Write your testing code here
-    # - Create placeholder for inputs, training boolean, dropout keep probablity
-    # - Construct your model
-    # (Above 2 steps should be the same as in train function)
-    # - Create label prediction tensor
-    # - Run testing
-    # DO NOT RUN TRAINING HERE!
-    # LOAD THE MODEL AND RUN TEST ON THE TEST SET
 
     X = tf.placeholder(tf.float32, shape= cifar10_test_images.shape, name="X")
-    #Y = tf.placeholder(tf.float32, shape=(None, 10), name="y")
-    #prediction = tf.placeholder(tf.float32, shape=(None, 10), name="y")
 
     logits = net(X,True,None)
 
