@@ -4,9 +4,11 @@ from net import train, test
 from cifar10 import Cifar10
 from collections import OrderedDict
 from pprint import pformat
+import tensorflow as tf
+
 
 min_thres=0.60
-max_thres=0.70
+max_thres=0.80
 
 
 def compute_score(acc, min_thres, max_thres):
@@ -21,7 +23,7 @@ def compute_score(acc, min_thres, max_thres):
 
 
 if __name__ == '__main__':
-    TRAIN = True
+    TRAIN = False
     if TRAIN:
         train()
     cifar10_test = Cifar10(test=True, shuffle=False, one_hot=False)

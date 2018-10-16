@@ -8,6 +8,7 @@ from six.moves import cPickle
 from six.moves.urllib.error import HTTPError
 from six.moves.urllib.error import URLError
 from six.moves.urllib.request import urlopen
+import tensorflow as tf
 
 
 def get_file(fname,
