@@ -2,6 +2,7 @@ from ops import *
 import timeit
 from cifar10 import Cifar10
 from tensorflow.contrib.layers import flatten
+
 def W_generator(shape):
     mu = 0
     sigma = 0.1
