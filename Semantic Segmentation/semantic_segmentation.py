@@ -1,7 +1,14 @@
 import tensorflow as tf
 import numpy as np
 from input_helper import TextureImages
+def W_generator(shape):
+    mu = 0
+    sigma = 0.1
 
+    W = tf.Variable(tf.truncated_normal(shape,mean=mu,stddev=sigma))
+
+    return W
+  
 
 def SemSeg(input_tensor, is_training):
     # TODO: Implement Semantic Segmentation network here
@@ -13,6 +20,65 @@ def SemSeg(input_tensor, is_training):
     # therefore last dimension will be 5
     # Hint: To make your output tensor has the same height and width with input_tensor,
     # you can use tf.image.resize_bilinear
+    print(input_tensor.shape)
+    with tf.name_scope("layer1"):
+
+        conv1_W = W_generator([3,3,3,128])
+        conv1_b = tf.Variable(tf.zeros(128))
+        conv1 = tf.nn.conv2d(input_tensor,conv1_W,strides=[1,1,1,1],padding="VALID") + conv1_b
+        conv1 = tf.layers.batch_normalization(conv1, training=True)
+
+        conv1 = tf.nn.relu(conv1)
+        conv1 = tf.nn.max_pool(conv1,ksize=[1,2,2,1],strides=[1,2,2,1],padding="VALID")
+        
+        print('shape of conv1: ',conv1.shape)
+
+    with tf.name_scope("layer2"):
+        conv2_W = W_generator([3, 3, 128, 512])
+        conv2_b = tf.Variable(tf.zeros(512))
+        conv2 = tf.nn.conv2d(conv1, conv2_W, strides=[1, 1, 1, 1], padding='VALID') + conv2_b
+
+        # Batch_Normalization:
+        conv2 = tf.layers.batch_normalization(conv2, center=True, scale=True, training=True)
+
+        conv2 = tf.nn.relu(conv2)
+
+        print('shape of conv2: ',conv2.shape)
+
+        conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+    #3.Convolution using 256 filters
+    #using three 3x3 filter to replace one 7x7 filter
+    with tf.name_scope("layer3"):
+        conv3_W = W_generator([3, 3, 512, 1024])
+        conv3_b = tf.Variable(tf.zeros(1024))
+        conv3 = tf.nn.conv2d(conv2, conv3_W, strides=[1, 2, 2, 1], padding='VALID') + conv3_b
+
+        conv3 = tf.layers.batch_normalization(conv3, center=True, scale=True, training=True)
+        conv3 = tf.nn.relu(conv3)
+
+        # if is_training:
+        #     conv3 = tf.nn.dropout(conv3, keep_prob=0.5)
+
+        conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+        print('shape of conv3: ',conv3.shape)
+
+
+    with tf.name_scope("layer6"):
+      
+        conv6 = tf.layers.conv2d_transpose(inputs=conv3,filters=64,kernel_size=[5, 5],
+                          strides=[10,10], padding="VALID",activation=tf.nn.relu)
+        
+        print('shape of conv6: ',conv6.shape)
+        
+        
+        logits = tf.layers.conv2d_transpose(inputs=conv6,filters=5,kernel_size=[5, 5],
+                           strides=[1,1], padding="VALID",activation=tf.nn.relu)
+        
+        
+        logits = tf.image.resize_bilinear(images= logits,size = [196,196])
+        
     return logits
 
 
