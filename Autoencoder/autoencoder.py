@@ -13,9 +13,9 @@ def AutoEncoder(input_tensor, is_training):
     # TODO: Define the architecture of your autoencoder here
 
     n_inputs = 784
-    hidden1 = 100
+    hidden1 = 300
     hidden2 = 20
-    hidden3 = 100
+    hidden3 = 300
     n_outputs = 784
 
     # input_tensor = tf.placeholder(tf.float32,shape=(None,n_inputs),name="input_image")
