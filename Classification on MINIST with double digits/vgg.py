@@ -86,8 +86,10 @@ def VGG_net(X,is_training):
 
     # shape = int(np.prod(conv5.get_shape()[1:]))
     # drop = tf.nn.dropout(shape, 0.6, name='drop')
+    shape = int(np.prod(conv5.get_shape()[1:]))
+    fc0 = tf.reshape(conv5, (-1, shape))
 
-    fc0 = flatten(conv5)
+    #fc0 = flatten(conv5)
     #print(drop.get_shape())
 
     with tf.name_scope("layer6_fc"):
@@ -103,9 +105,8 @@ def VGG_net(X,is_training):
     with tf.name_scope("layer7_fc"):
         fc2_W = W_generator([128, 20])
         fc2_b = tf.Variable(tf.zeros(20))
-        logits = tf.matmul(fc1, fc2_W) + fc2_b
+        fc2 = tf.matmul(fc1, fc2_W) + fc2_b
 
-    print(logits.shape)
-    logits = np.reshape(logits,[-1,2,10])
+    logits = tf.reshape(fc2,shape=[-1,2,10])
 
     return logits

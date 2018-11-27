@@ -18,13 +18,12 @@ def train(x_train,y_train):
 
     #params
     learning_rate = 0.01
-
     X = tf.placeholder(tf.float32, shape=(None,64,64,1) , name="images")
-    Y = tf.placeholder(tf.float32,shape=(None,10) , name = "labels")
+    Y = tf.placeholder(tf.float32,shape=(None,2,10) , name = "labels")
 
     logits = VGG_net(X,is_training= True)
 
-    prediction = tf.argmax(logits,2)
+    prediction = tf.argmax(logits,1)
 
     loss_function = tf.nn.softmax_cross_entropy_with_logits(logits = logits,labels=Y)
     loss = tf.reduce_mean(loss_function)
@@ -36,28 +35,29 @@ def train(x_train,y_train):
         tf.summary.histogram(var.op.name + "/histogram", var)
 
     add_gradient_summaries(grads_and_vars)
-    tf.summary.scalar("loss_operation",training_operation)
+    tf.summary.scalar("loss_operation",loss)
     merged_summary_op = tf.summary.merge_all()
 
     saver = tf.train.Saver()
 
     #calculate accuracy
-    accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(prediction,tf.argmax(Y,2))))
+    accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(prediction,tf.argmax(Y,1)),dtype=tf.float32))
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
         batch_size = 100
         dataset = data_loader.dataIterator(x_train,y_train,batch_size)
-        n_epochs = 100
-        n_batches = 100
+        n_epochs = 30
+        n_batches = 30
 
         for epoch in range(n_epochs):
 
             for iter in range(n_batches):
                 batch_x,batch_y = dataset.next_batch()
-                sess.run([training_operation,merged_summary_op],feed_dict={X:batch_x,Y:batch_y})
 
+
+                sess.run([training_operation,merged_summary_op],feed_dict={X:batch_x,Y:batch_y})
 
             acc = accuracy.eval(feed_dict={X:batch_x,Y:batch_y})
             losses = loss.eval(feed_dict={X:batch_x,Y:batch_y})

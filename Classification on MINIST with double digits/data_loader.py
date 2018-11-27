@@ -10,7 +10,8 @@ class dataIterator(object):
         self.data_size = len(self.image)
 
         self.start = 0
-        self.idx = self.randomize()
+
+        self.randomize()
 
 
     def randomize(self):
@@ -28,7 +29,7 @@ class dataIterator(object):
 
         if self.start >= self.data_size:
             self.randomize()
-
+        batch_X = np.reshape(batch_X,newshape=[self.batch_size,64,64,1])
         return batch_X,batch_Y
 
 #load all the data
@@ -47,7 +48,7 @@ def dataloader():
 
 def one_hot(label):
     #print(len(label.reshape(-1)))
-    return sum(np.squeeze(np.eye(10)[label.reshape(-1)]))
+    return np.squeeze(np.eye(10)[label.reshape(-1)])
 
 
 def data_spliter(image,label):
