@@ -104,5 +104,6 @@ venv.bak/
 .mypy_cache/
 
 .DS_Store
+Classification on MINIST with double digits/ckpt
 
 

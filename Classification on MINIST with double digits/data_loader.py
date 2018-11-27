@@ -44,6 +44,8 @@ def dataloader():
     yTrain = np.array([one_hot(m) for m in yTrain])
     yValid = np.array([one_hot(n) for n in yValid])
 
+    xValid = np.reshape(xValid, newshape=[xValid.shape[0], 64, 64, 1])
+
     return xTrain,yTrain,xValid,yValid
 
 def one_hot(label):
@@ -61,5 +63,8 @@ def data_spliter(image,label):
 
     Xtrain = image[:split_idx]
     Ytrain = label[:split_idx]
+
+    Xtest = np.reshape(Xtest, newshape=[Xtest.shape[0], 64, 64, 1])
+    Xtrain = np.reshape(Xtrain, newshape=[Xtrain.shape[0], 64, 64, 1])
 
     return Xtrain,Ytrain,Xtest,Ytest
