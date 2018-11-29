@@ -46,9 +46,9 @@ def train(x_train, y_train):
         sess.run(tf.global_variables_initializer())
 
         batch_size = 100
-        dataset = dataIterator(x_train, y_train, batch_size)
-        n_epochs = 300
-        n_batches = 300
+        dataset = data_loader.dataIterator(x_train, y_train, batch_size)
+        n_epochs = 2
+        n_batches = 2
 
         for epoch in range(n_epochs):
 
@@ -57,9 +57,11 @@ def train(x_train, y_train):
 
                 sess.run([training_operation, merged_summary_op], feed_dict={X: batch_x, Y: batch_y})
 
+            valid_acc = accuracy.eval(feed_dict={X: x_valid[:1000], Y: y_valid[:1000]})
+
             acc = accuracy.eval(feed_dict={X: batch_x, Y: batch_y})
             losses = loss.eval(feed_dict={X: batch_x, Y: batch_y})
-            print(epoch, "Training batch accuracy:", acc, "loss is: ", losses)
+            print(epoch, "Training batch accuracy:", acc, "loss is: ", losses, "valid accuracy is: ", valid_acc)
 
         saver.save(sess, 'ckpt/', global_step=n_epochs)
 
@@ -98,11 +100,11 @@ def test(x_test, y_test):
 
 if __name__ == '__main__':
     print("Loading data ...")
-    x_train, y_train, x_valid, y_valid = dataloader()
+    x_train, y_train, x_valid, y_valid = data_loader.dataloader()
     # divide data into 45000 and 1000 for trainning data and test data
-    x_train, y_train, x_test, y_test = data_spliter(x_train, y_train)
+    #x_train, y_train, x_test, y_test = data_spliter(x_train, y_train)
 
-    print("Shape:", x_train.shape, y_train.shape, x_test.shape, y_test.shape)
+    print("Shape:", x_train.shape, y_train.shape, x_valid.shape, y_valid.shape)
 
     train(x_train, y_train)
 
