@@ -1,8 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import data_loader
-from vgg import VGG_net
-import timeit
+from Nets import classify_net
 from tensorflow.contrib.layers import flatten
 
 
@@ -12,7 +11,7 @@ def add_gradient_summaries(grads_and_vars):
             tf.summary.histogram(var.op.name + "/gradient", grad)
 
 
-def train(x_train, y_train):
+def train_classify(x_train, y_train,x_valid,y_valid):
     tf.reset_default_graph()
 
     # params
@@ -20,7 +19,7 @@ def train(x_train, y_train):
     X = tf.placeholder(tf.float32, shape=(None, 64, 64, 1), name="images")
     Y = tf.placeholder(tf.float32, shape=(None, 2, 10), name="labels")
 
-    logits = VGG_net(X, is_training=True)
+    logits = classify_net(X, is_training=True)
 
     prediction = tf.argmax(logits, 2)
 
@@ -57,7 +56,11 @@ def train(x_train, y_train):
 
                 sess.run([training_operation, merged_summary_op], feed_dict={X: batch_x, Y: batch_y})
 
-            valid_acc = accuracy.eval(feed_dict={X: x_valid[:1000], Y: y_valid[:1000]})
+            valid_acc = 0
+            for i in range(5):
+                valid_acc += accuracy.eval(
+                    feed_dict={X: x_valid[i * 1000:i * 1000 + 1000], Y: y_valid[i * 1000:i * 1000 + 1000]})
+            valid_acc /= 5
 
             acc = accuracy.eval(feed_dict={X: batch_x, Y: batch_y})
             losses = loss.eval(feed_dict={X: batch_x, Y: batch_y})
@@ -65,61 +68,9 @@ def train(x_train, y_train):
 
         saver.save(sess, 'ckpt/', global_step=n_epochs)
 
-
-def test(x_test, y_test):
-    tf.reset_default_graph()
-
-    test_batch_size = 1000
-    X = tf.placeholder(tf.float32, shape=[test_batch_size, 64, 64, 1], name='X')
-
-    logits = VGG_net(X, False)
-
-    saver = tf.train.Saver()
-
-    with tf.Session() as sess:
-        saver.restore(sess, tf.train.latest_checkpoint('ckpt'))
-
-        corr = 0
-
-        for i in range(0, x_test.shape[0] // test_batch_size - 1):
-
-            output = sess.run(logits, feed_dict={X: x_test[i * test_batch_size:(i + 1) * test_batch_size]})
-
-            # pred = np.argmax(output,1)
-
-            true = np.argmax(y_test[i * test_batch_size:(i + 1) * test_batch_size], 2)
-
-            pred = np.argmax(output, 2)
-
-            for i in range(len(true)):
-                if true[i].all() == pred[i].all():
-                    corr += 1
-
-        return corr
+def train_detection(x_train, train_bboxes,x_valid,valid_bboxes):
 
 
-if __name__ == '__main__':
-    print("Loading data ...")
-    x_train, y_train, x_valid, y_valid = data_loader.dataloader()
-    # divide data into 45000 and 1000 for trainning data and test data
-    #x_train, y_train, x_test, y_test = data_spliter(x_train, y_train)
 
-    print("Shape:", x_train.shape, y_train.shape, x_valid.shape, y_valid.shape)
 
-    train(x_train, y_train)
-
-    time_start = timeit.default_timer()
-    np.random.seed(0)
-
-    correct_pred = test(x_valid, y_valid)
-
-    np.random.seed()
-    run_time = time_start - timeit.default_timer()
-
-    # print(y_test.flatten(),tf.stack(pred[0]).shape)
-
-    # correct_pred = (y_test.flatten() == pred.flatten()).astype(np.int32).sum()
-
-    accuracy = float(correct_pred) / len(y_valid)
-
-    print("Test accuracy is : " + str(accuracy))
+    return

@@ -37,8 +37,12 @@ def dataloader():
     xTrain = np.load('train_val/train_X.npy')
     yTrain = np.load('train_val/train_Y.npy')
 
+    train_bbox = np.load('train_val/train_bboxes.npy')
+
     xValid = np.load('train_val/valid_X.npy')
     yValid = np.load('train_val/valid_Y.npy')
+
+    valid_bbox = np.load('train_val/train_bboxes.npy')
 
 
     yTrain = np.array([one_hot(m) for m in yTrain])
@@ -46,25 +50,9 @@ def dataloader():
 
     xValid = np.reshape(xValid, newshape=[xValid.shape[0], 64, 64, 1])
 
-    return xTrain,yTrain,xValid,yValid
+    return xTrain,yTrain,xValid,yValid,train_bbox,valid_bbox
 
 def one_hot(label):
     #print(len(label.reshape(-1)))
     return np.squeeze(np.eye(10)[label.reshape(-1)])
 
-
-def data_spliter(image,label):
-    test_data_size = 10000
-    split_idx = len(image) - test_data_size
-
-
-    Xtest = image[-test_data_size:]
-    Ytest = label[-test_data_size:]
-
-    Xtrain = image[:split_idx]
-    Ytrain = label[:split_idx]
-
-    Xtest = np.reshape(Xtest, newshape=[Xtest.shape[0], 64, 64, 1])
-    Xtrain = np.reshape(Xtrain, newshape=[Xtrain.shape[0], 64, 64, 1])
-
-    return Xtrain,Ytrain,Xtest,Ytest
