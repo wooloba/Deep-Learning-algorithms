@@ -1,8 +1,8 @@
 import timeit
 import data_loader
 import numpy as np
-from training import train_classify,train_detection
-from test import test_classify,test_detection
+from training import train
+from test import test
 
 
 def main():
@@ -11,18 +11,17 @@ def main():
 
     print("Shape:", x_train.shape, y_train.shape, x_valid.shape, y_valid.shape)
 
+
+    #task = "detection"
+    task = 'classify'
+
     #Classification
-    train_classify(x_train, y_train,x_valid,y_valid)
+    train(x_train, y_train,x_valid,y_valid,train_bbox,valid_bbox,task= task)
     time_start = timeit.default_timer()
     np.random.seed(0)
-    acc = test_classify(x_valid, y_valid)
+    acc = test(x_valid, y_valid,valid_bbox,task=task)
     np.random.seed()
     run_time = time_start - timeit.default_timer()
-
-    #detection
-
-
-
 
 
     print("Test accuracy is : " + str(acc))
