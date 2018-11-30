@@ -12,8 +12,8 @@ def main():
     print("Shape:", x_train.shape, y_train.shape, x_valid.shape, y_valid.shape)
 
 
-    #task = "detection"
-    task = 'classify'
+    task = "detection"
+    #task = 'classify'
 
     #Classification
     train(x_train, y_train,x_valid,y_valid,train_bbox,valid_bbox,task= task)
