@@ -2,13 +2,15 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers import flatten
 
+
 def W_generator(shape):
     mu = 0
     sigma = 0.1
     W = tf.Variable(tf.truncated_normal(shape=shape, mean=mu, stddev=sigma))
     return W
 
-def net(X,is_training,task):
+
+def net(X, is_training, task):
     with tf.name_scope("Layer1"):
         conv1_W = W_generator([5, 5, 1, 32])
         conv1_b = tf.Variable(tf.zeros(32))
@@ -82,8 +84,8 @@ def net(X,is_training,task):
     shape = int(np.prod(conv5.get_shape()[1:]))
     fc0 = tf.reshape(conv5, (-1, shape))
 
-    #fc0 = flatten(conv5)
-    #print(drop.get_shape())
+    # fc0 = flatten(conv5)
+    # print(drop.get_shape())
 
     with tf.name_scope("layer6_fc"):
         fc1_W = W_generator([512, 128])
@@ -96,13 +98,18 @@ def net(X,is_training,task):
         fc1 = tf.nn.relu(fc1)
 
     with tf.name_scope("layer7_fc"):
-        fc2_W = W_generator([128, 20])
-        fc2_b = tf.Variable(tf.zeros(20))
-        fc2 = tf.matmul(fc1, fc2_W) + fc2_b
+        if task == 'classify':
+            fc2_W = W_generator([128, 20])
+            fc2_b = tf.Variable(tf.zeros(20))
+            fc2 = tf.matmul(fc1, fc2_W) + fc2_b
 
-    if task == 'classify':
-        logits = tf.reshape(fc2,shape=[-1,2,10])
-    elif task == 'detection':
-        logits = tf.reshape(fc2,shape= [-1,2,4])
+            logits = tf.reshape(fc2, shape=[-1, 2, 10])
+
+        elif task == 'detection':
+            fc2_W = W_generator([128, 8])
+            fc2_b = tf.Variable(tf.zeros(8))
+            fc2 = tf.matmul(fc1, fc2_W) + fc2_b
+
+            logits = tf.reshape(fc2, shape=[-1, 2, 4])
 
     return logits

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # utils to help iterate through data
 class dataIterator(object):
     def __init__(self,images,label,batch_size):
@@ -34,15 +35,15 @@ class dataIterator(object):
 
 #load all the data
 def dataloader():
-    xTrain = np.load('train_val/train_X.npy')
-    yTrain = np.load('train_val/train_Y.npy')
+    xTrain = np.load('train_X.npy')
+    yTrain = np.load('train_Y.npy')
 
-    train_bbox = np.load('train_val/train_bboxes.npy')
+    train_bbox = np.load('train_bboxes.npy')
 
-    xValid = np.load('train_val/valid_X.npy')
-    yValid = np.load('train_val/valid_Y.npy')
+    xValid = np.load('valid_X.npy')
+    yValid = np.load('valid_Y.npy')
 
-    valid_bbox = np.load('train_val/train_bboxes.npy')
+    valid_bbox = np.load('valid_bboxes.npy')
 
 
     yTrain = np.array([one_hot(m) for m in yTrain])
@@ -55,4 +56,5 @@ def dataloader():
 def one_hot(label):
     #print(len(label.reshape(-1)))
     return np.squeeze(np.eye(10)[label.reshape(-1)])
+
 
