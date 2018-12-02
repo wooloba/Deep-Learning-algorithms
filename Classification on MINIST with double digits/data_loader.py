@@ -34,24 +34,31 @@ class dataIterator(object):
         return batch_X,batch_Y
 
 #load all the data
-def dataloader():
-    xTrain = np.load('train_X.npy')
-    yTrain = np.load('train_Y.npy')
+def dataloader(prefix):
+    #load training data
+    xTrain = np.load('train_val/train_X.npy')
+    yTrain = np.load('train_val/train_Y.npy')
+    train_bbox = np.load('train_val/train_bboxes.npy')
 
-    train_bbox = np.load('train_bboxes.npy')
+    #load test data
+    xTest = np.load('train_val/' + prefix + '_X.npy')
+    yTest = np.load('train_val/' + prefix + '_Y.npy')
+    Test_bbox = np.load('train_val/' + prefix + '_bboxes.npy')
 
-    xValid = np.load('valid_X.npy')
-    yValid = np.load('valid_Y.npy')
-
-    valid_bbox = np.load('valid_bboxes.npy')
+    #load valid data
+    xValid = np.load('train_val/valid_X.npy')
+    yValid = np.load('train_val/valid_Y.npy')
+    valid_bbox = np.load('train_val/valid_bboxes.npy')
 
 
     yTrain = np.array([one_hot(m) for m in yTrain])
     yValid = np.array([one_hot(n) for n in yValid])
 
-    xValid = np.reshape(xValid, newshape=[xValid.shape[0], 64, 64, 1])
 
-    return xTrain,yTrain,xValid,yValid,train_bbox,valid_bbox
+    xValid = np.reshape(xValid, newshape=[xValid.shape[0], 64, 64, 1])
+    xTest = np.reshape(xTest, newshape=[xTest.shape[0], 64, 64, 1])
+
+    return xTrain,yTrain,xValid,yValid,train_bbox,valid_bbox,xTest,yTest,Test_bbox
 
 def one_hot(label):
     #print(len(label.reshape(-1)))

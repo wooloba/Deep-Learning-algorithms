@@ -71,9 +71,6 @@ def train(x_train, y_train, x_valid, y_valid, train_bbox, valid_bbox, task):
         loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(Y, prediction)), axis=2))) + sum(
             tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
 
-        # calculate accuracy
-
-        # accuracy = 100.0 * tf.reduce_mean(tf.cast(tf.equal(prediction, Y), dtype=tf.float32))
 
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     grads_and_vars = optimizer.compute_gradients(loss, tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES))
@@ -129,4 +126,4 @@ def train(x_train, y_train, x_valid, y_valid, train_bbox, valid_bbox, task):
                 losses = loss.eval(feed_dict={X: batch_x, Y: batch_y})
                 print(task + ": ", epoch, "loss: ", losses, "valid iou is: ", valid_acc)
 
-        saver.save(sess, 'ckpt/', global_step=n_epochs)
+        saver.save(sess, 'task/', global_step=n_epochs)
