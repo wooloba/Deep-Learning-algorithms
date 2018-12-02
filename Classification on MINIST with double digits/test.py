@@ -3,7 +3,7 @@ import tensorflow as tf
 import data_loader
 from Nets import net
 from tensorflow.contrib.layers import flatten
-
+from training import compute_classification_acc,compute_iou
 
 def evaluation(pred, prefix, task):
     # pred_class: Your predicted labels for the 2 digits, shape [N, 2]

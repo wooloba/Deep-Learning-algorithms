@@ -7,7 +7,7 @@ from test import test
 
 def main():
     print("Loading data ...")
-    x_train, y_train, x_valid, y_valid, train_bbox, valid_bbox = dataloader()
+    x_train, y_train, x_valid, y_valid, train_bbox, valid_bbox = data_loader.dataloader()
 
     print("Shape:", x_train.shape, y_train.shape, x_valid.shape, y_valid.shape, train_bbox.shape, valid_bbox.shape)
 

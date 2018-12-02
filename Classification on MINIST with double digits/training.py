@@ -96,9 +96,9 @@ def train(x_train, y_train, x_valid, y_valid, train_bbox, valid_bbox, task):
         n_batches = 300
 
         if task == 'classify':
-            dataset = dataIterator(x_train, y_train, batch_size)
+            dataset = data_loader.dataIterator(x_train, y_train, batch_size)
         elif task == 'detection':
-            dataset = dataIterator(x_train, train_bbox, batch_size)
+            dataset = data_loader.dataIterator(x_train, train_bbox, batch_size)
 
         for epoch in range(n_epochs):
             for iter in range(n_batches):
